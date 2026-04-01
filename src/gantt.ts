@@ -259,6 +259,7 @@ export class Gantt implements IVisual {
     private static LegendItems: ClassAndSelector = createClassAndSelector("legendItem");
     private static LegendTitle: ClassAndSelector = createClassAndSelector("legendTitle");
     private static ClickableArea: ClassAndSelector = createClassAndSelector("clickableArea");
+    private static VerticalGridLine: ClassAndSelector = createClassAndSelector("vertical-grid-line");
 
     private viewport: IViewport;
     private colors: IColorPalette;
@@ -1929,6 +1930,7 @@ export class Gantt implements IVisual {
         this.renderTasks(groupedTasks, objects);
         this.updateTaskLabels(groupedTasks, settings.taskLabels.taskLabelsGroup.general.width.value);
         this.updateElementsPositions(this.margin);
+        this.renderVerticalGridLines(groupedTasks);
         this.createMilestoneLine(groupedTasks);
 
         if (this.formattingSettings.general.scrollToCurrentTime.value && this.hasNotNullableDates) {
@@ -2352,6 +2354,52 @@ export class Gantt implements IVisual {
         this.axisBackground
             .style("fill", axisBackgroundEnable ? axisBackgroundColor : "none")
             .style("fill-opacity", !isNaN(axisBackgroundOpacity) ? axisBackgroundOpacity / 100 : 1);
+    }
+
+    private renderVerticalGridLines(groupedTasks: GroupedTask[]): void {
+        const displayVerticalGridLines = this.formattingSettings.general.displayVerticalGridLines.value;
+
+        // Remove existing vertical grid lines
+        this.chartGroup.selectAll(Gantt.VerticalGridLine.selectorName).remove();
+
+        if (!displayVerticalGridLines || !this.hasNotNullableDates || !this.xAxisProperties) {
+            return;
+        }
+
+        // Get tick values from the rendered axis
+        const tickValues: number[] = [];
+        this.axisGroup.selectAll(".tick").each(function () {
+            const transform = d3Select(this).attr("transform");
+            const match = transform && transform.match(/translate\(\s*([\d.]+)/);
+            if (match) {
+                tickValues.push(parseFloat(match[1]));
+            }
+        });
+
+        const lastTaskGroup: GroupedTask = groupedTasks[groupedTasks.length - 1];
+        const tasksTotal: number = lastTaskGroup.layers.size
+            ? lastTaskGroup.index + lastTaskGroup.layers.size
+            : groupedTasks.length;
+        const lineLength: number = this.getMilestoneLineLength(tasksTotal);
+
+        const axisColor: string = this.formattingSettings.dateType.axisColor.value.value;
+
+        const lines = this.chartGroup
+            .selectAll(Gantt.VerticalGridLine.selectorName)
+            .data(tickValues);
+
+        lines.enter()
+            .append("line")
+            .classed(Gantt.VerticalGridLine.className, true)
+            .attr("x1", (d: number) => d)
+            .attr("y1", 0)
+            .attr("x2", (d: number) => d)
+            .attr("y2", lineLength)
+            .style("stroke", this.colorHelper.getHighContrastColor("foreground", axisColor))
+            .style("stroke-width", 1)
+            .style("stroke-opacity", 0.2);
+
+        lines.exit().remove();
     }
 
     private setTickColor(

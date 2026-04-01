@@ -69,6 +69,12 @@ export class GeneralCardSettings extends CompositeCard {
         value: true
     });
 
+    public displayVerticalGridLines = new ToggleSwitch({
+        name: "displayVerticalGridLines",
+        displayNameKey: "Visual_DisplayVerticalGridLines",
+        value: false
+    });
+
     public durationUnit = new ItemDropdown({
         name: "durationUnit",
         displayNameKey: "Visual_DurationUnit",
@@ -102,6 +108,7 @@ export class GeneralCardSettings extends CompositeCard {
             this.groupTasks,
             this.scrollToCurrentTime,
             this.displayGridLines,
+            this.displayVerticalGridLines,
             this.durationUnit,
             this.durationMin,
             this.barsRoundedCorners
