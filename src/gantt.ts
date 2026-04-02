@@ -2396,7 +2396,8 @@ export class Gantt implements IVisual {
             .attr("x2", (d: number) => d)
             .attr("y2", lineLength)
             .style("stroke", gridLineColor)
-            .style("stroke-width", 1);
+            .style("stroke-width", 1)
+            .style("stroke-opacity", 0.5);
 
         lines.exit().remove();
     }
