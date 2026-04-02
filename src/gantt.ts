@@ -2382,7 +2382,7 @@ export class Gantt implements IVisual {
             : groupedTasks.length;
         const lineLength: number = this.getMilestoneLineLength(tasksTotal);
 
-        const axisColor: string = this.formattingSettings.dateType.axisColor.value.value;
+        const gridLineColor: string = this.colorHelper.getHighContrastColor("foreground", Gantt.DefaultValues.TaskLineColor);
 
         const lines = this.chartGroup
             .selectAll(Gantt.VerticalGridLine.selectorName)
@@ -2395,9 +2395,8 @@ export class Gantt implements IVisual {
             .attr("y1", 0)
             .attr("x2", (d: number) => d)
             .attr("y2", lineLength)
-            .style("stroke", this.colorHelper.getHighContrastColor("foreground", axisColor))
-            .style("stroke-width", 1)
-            .style("stroke-opacity", 0.2);
+            .style("stroke", gridLineColor)
+            .style("stroke-width", 1);
 
         lines.exit().remove();
     }
