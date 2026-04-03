@@ -1184,6 +1184,7 @@ export class Gantt implements IVisual {
 
         const resource: string = String(values?.Resource?.[index] ?? "");
         const taskParentName: string | null = values?.Parent?.[index] != null ? String(values.Parent[index]) : null;
+        const sortOrder: number | null = values?.SortOrder?.[index] != null ? Number(values.SortOrder[index]) : null;
         const milestoneType: string | null = (values.Milestones && !lodashIsEmpty(values.Milestones[index]) && values.Milestones[index]) || null;
 
         const startDate: Date = (values.StartDate && values.StartDate[index]
@@ -1227,7 +1228,8 @@ export class Gantt implements IVisual {
                 tooltipInfo: null,
                 category: taskName
             }] : [],
-            highlight: highlight !== null
+            highlight: highlight !== null,
+            sortOrder,
         };
 
         return { taskParentName, milestone: milestoneType, startDate, extraInformation, highlight, task };
@@ -1350,6 +1352,9 @@ export class Gantt implements IVisual {
         if (addedParents.includes(taskParentName)) {
             const parentTask: Task = tasks.find(x => x.index === 0 && x.name === taskParentName);
             parentTask.children.push(task);
+            if (task.sortOrder != null && (parentTask.sortOrder == null || task.sortOrder < parentTask.sortOrder)) {
+                parentTask.sortOrder = task.sortOrder;
+            }
         } else {
             addedParents.push(taskParentName);
 
@@ -1374,7 +1379,8 @@ export class Gantt implements IVisual {
                 selected: null,
                 identity: selectionBuilder.createSelectionId(),
                 Milestones: milestone && startDate ? [{ type: milestone, start: startDate, tooltipInfo: null, category: String(categoryValue ?? "") }] : [],
-                highlight: highlight !== null
+                highlight: highlight !== null,
+                sortOrder: task.sortOrder,
             };
 
             tasks.push(parentTask);
@@ -1435,14 +1441,25 @@ export class Gantt implements IVisual {
     }
 
     public static sortTasksWithParents(tasks: Task[], sortingOptions: SortingOptions): Task[] {
+        const hasSortOrder = tasks.some(t => t.sortOrder != null);
+
         const sortingFunction = ((a: Task, b: Task) => {
+            // If SortOrder is available, use it as primary sort key
+            if (hasSortOrder) {
+                const orderA = a.sortOrder ?? Number.MAX_SAFE_INTEGER;
+                const orderB = b.sortOrder ?? Number.MAX_SAFE_INTEGER;
+                if (orderA !== orderB) {
+                    return orderA - orderB;
+                }
+            }
+
             const sortingDirection = sortingOptions.sortingDirection === SortDirection.Ascending ? 1 : -1;
             const nameA = String(a.name ?? "");
             const nameB = String(b.name ?? "");
             return nameA.localeCompare(nameB, undefined, { numeric: true }) * sortingDirection;
         });
 
-        if (sortingOptions.isCustomSortingNeeded) {
+        if (hasSortOrder || sortingOptions.isCustomSortingNeeded) {
             tasks.sort(sortingFunction);
         }
 
@@ -1452,7 +1469,7 @@ export class Gantt implements IVisual {
                 task.index = index++;
 
                 if (task.children) {
-                    if (sortingOptions.isCustomSortingNeeded) {
+                    if (hasSortOrder || sortingOptions.isCustomSortingNeeded) {
                         task.children.sort(sortingFunction);
                     }
 

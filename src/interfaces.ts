@@ -83,6 +83,7 @@ export interface Task extends SelectableDataPoint {
     highlight?: boolean;
     Milestones?: Milestone[];
     layer?: number;
+    sortOrder?: number;
 }
 
 export interface Layer {

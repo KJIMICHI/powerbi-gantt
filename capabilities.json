@@ -75,6 +75,20 @@
             "displayName": "Milestones",
             "displayNameKey": "Milestones",
             "kind": "Grouping"
+        },
+        {
+            "name": "SortOrder",
+            "displayName": "#",
+            "displayNameKey": "Role_SortOrder",
+            "kind": "Grouping",
+            "requiredTypes": [
+                {
+                    "numeric": true
+                },
+                {
+                    "integer": true
+                }
+            ]
         }
     ],
     "dataViewMappings": [
@@ -120,6 +134,10 @@
                     "Milestones": {
                         "min": 0,
                         "max": 1
+                    },
+                    "SortOrder": {
+                        "min": 0,
+                        "max": 1
                     }
                 },
                 {
@@ -162,6 +180,10 @@
                     "Milestones": {
                         "min": 0,
                         "max": 1
+                    },
+                    "SortOrder": {
+                        "min": 0,
+                        "max": 1
                     }
                 },
                 {
@@ -202,6 +224,10 @@
                         "max": 3
                     },
                     "Milestones": {
+                        "min": 0,
+                        "max": 1
+                    },
+                    "SortOrder": {
                         "min": 0,
                         "max": 1
                     }
@@ -280,6 +306,11 @@
                         {
                             "for": {
                                 "in": "Milestones"
+                            }
+                        },
+                        {
+                            "for": {
+                                "in": "SortOrder"
                             }
                         }
                     ]

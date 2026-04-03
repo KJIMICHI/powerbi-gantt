@@ -8,6 +8,7 @@
 	"Role_Completion": "% Completion",
 	"Role_Resource": "Resource",
 	"Role_Milestones": "Milestones",
+	"Role_SortOrder": "#",
 	"Role_Tooltips": "Tooltips",
 	"Visual_General": "General",
 	"Visual_General_Background": "General background",

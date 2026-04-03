@@ -108,4 +108,5 @@ export class GanttColumns<T> {
     public Resource: T = null;
     public ExtraInformation: T = null;
     public Milestones: T = null;
+    public SortOrder: T = null;
 }

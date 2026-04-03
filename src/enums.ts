@@ -58,6 +58,7 @@ export enum GanttRole {
     Resource = "Resource",
     Milestones = "Milestones",
     ExtraInformation = "ExtraInformation",
+    SortOrder = "SortOrder",
 }
 
 export enum MilestoneLineType {
